@@ -16,11 +16,19 @@ public class Board {
     }
 
     public int getboxValue(int x, int y) {
-        return board[x][y];
+        return board[y][x];
     }
     
     public void setBoxValue(int x, int y, Role role) {
-        board[x][y] = role.getValue();
+        board[y][x] = role.getValue();
+    }
+    
+    public int getVerticalSze() {
+        return board.length;
+    }
+    
+    public int getHorisontalSze() {
+        return board[0].length;
     }
 
 }
