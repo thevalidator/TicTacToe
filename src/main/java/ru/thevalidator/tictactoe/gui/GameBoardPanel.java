@@ -3,8 +3,16 @@
  */
 package ru.thevalidator.tictactoe.gui;
 
+import java.awt.Color;
+import java.awt.Graphics;
+import java.awt.Image;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
+import java.io.IOException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.imageio.ImageIO;
+import static ru.thevalidator.tictactoe.gui.Settings.BOX_SIZE;
 import static ru.thevalidator.tictactoe.gui.Settings.MAIN_WINDOW_WIDTH;
 import static ru.thevalidator.tictactoe.gui.Settings.MARGIN;
 import ru.thevalidator.tictactoe.model.Board;
@@ -17,6 +25,7 @@ import ru.thevalidator.tictactoe.model.Role;
 public class GameBoardPanel extends javax.swing.JPanel implements MouseListener {
 
     private final Board board;
+    private boolean isPlayer;
 
     /**
      * Creates new form GameBoardPanel
@@ -70,9 +79,12 @@ public class GameBoardPanel extends javax.swing.JPanel implements MouseListener 
             int y = getRowNumber(yClickPos);
             System.out.printf("POINT[x=%d:y=%d] value=%d\n", x, y, board.getboxValue(x, y));
             if (board.getboxValue(x, y) == 0) {
-                board.setBoxValue(x, y, Role.CROSS);
+                isPlayer = !isPlayer;
+                Role role = isPlayer ? Role.CROSS : Role.NOUGHT;
+                board.setBoxValue(x, y, role);
             }
-            
+            //drawGrid();
+            drawFigures(getGraphics());
             
         }
 
@@ -104,6 +116,61 @@ public class GameBoardPanel extends javax.swing.JPanel implements MouseListener 
     @Override
     public void mouseExited(MouseEvent e) {
         //throw new UnsupportedOperationException("Not supported yet.");
+    }
+    
+    public void drawGrid(Graphics panel) {
+        //Graphics panel = getGraphics();
+        panel.setColor(Color.DARK_GRAY);
+        for (int i = 1; i < 3; i++) {
+            panel.fillRect((MAIN_WINDOW_WIDTH - (MARGIN * 2)) / 3 * i, MARGIN, MARGIN, MAIN_WINDOW_WIDTH - MARGIN * 4);
+            panel.fillRect(MARGIN, (MAIN_WINDOW_WIDTH - (MARGIN * 2)) / 3 * i, MAIN_WINDOW_WIDTH - MARGIN * 4, MARGIN);
+        }
+    }
+
+    private void drawFigures(Graphics g) {
+        try {
+            //Graphics panel = jPanel2.getGraphics();
+            Image cross = ImageIO.read(getClass().getClassLoader().getResource("icons/cross.png"));
+            Image circle = ImageIO.read(getClass().getClassLoader().getResource("icons/circle.png"));
+            Image crossWin = ImageIO.read(getClass().getClassLoader().getResource("icons/cross_WIN.png"));
+            Image circleWin = ImageIO.read(getClass().getClassLoader().getResource("icons/circle_WIN.png"));
+
+            for (int y = 0; y < board.getVerticalSze(); y++) {
+                for (int x = 0; x < board.getHorisontalSze(); x++) {
+                    // TODO: refactor selection figure to draw logic
+                    int value = board.getboxValue(x, y);
+                    if (value == Role.CROSS_WIN.getValue()) {
+                        drawFigure(g, crossWin, x, y);
+                    } else if (value == Role.NOUGHT_WIN.getValue()) {
+                        drawFigure(g, circleWin, x, y);
+                    } else if (value == Role.CROSS.getValue()) {
+                        drawFigure(g, cross, x, y);
+                    } else if (value == Role.NOUGHT.getValue()) {
+                        drawFigure(g, circle, x, y);
+                    }
+                }
+            }
+            
+        } catch (IOException ex) {
+            Logger.getLogger(MainWindow.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+    
+    private void drawFigure(Graphics g, Image figure, int x, int y) {
+        int imgSize = figure.getWidth(null);
+        int start = MARGIN + BOX_SIZE / 2 - imgSize / 2;
+        int offset = BOX_SIZE + MARGIN / 2;
+
+        int crossLineStart = BOX_SIZE / 2 + MARGIN;
+        int crossLineOffset = BOX_SIZE + MARGIN / 2;
+        g.drawImage(figure, start + offset * x, start + offset * y, null);
+    }
+
+    @Override
+    protected void paintComponent(Graphics g) {
+        super.paintComponent(g);
+        drawGrid(g);
+        drawFigures(g);
     }
 
 
