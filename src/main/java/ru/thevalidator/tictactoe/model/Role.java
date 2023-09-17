@@ -10,7 +10,9 @@ package ru.thevalidator.tictactoe.model;
 public enum Role {
     
     CROSS(1),
-    NOUGHT(-1);
+    CROSS_WIN(2),
+    NOUGHT(-1),
+    NOUGHT_WIN(-2);
     
     private final int value;
 
