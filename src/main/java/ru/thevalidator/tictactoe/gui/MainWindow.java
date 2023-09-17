@@ -15,6 +15,8 @@ import static ru.thevalidator.tictactoe.gui.Settings.BOX_SIZE;
 import static ru.thevalidator.tictactoe.gui.Settings.MAIN_WINDOW_HEIGHT;
 import static ru.thevalidator.tictactoe.gui.Settings.MAIN_WINDOW_WIDTH;
 import static ru.thevalidator.tictactoe.gui.Settings.MARGIN;
+import ru.thevalidator.tictactoe.model.Board;
+import ru.thevalidator.tictactoe.model.Role;
 
 /**
  *
@@ -22,10 +24,13 @@ import static ru.thevalidator.tictactoe.gui.Settings.MARGIN;
  */
 public class MainWindow extends javax.swing.JFrame {
 
+    private Board board;
+
     /**
      * Creates new form MainWindow
      */
     public MainWindow() {
+        board = new Board();
         initComponents();
     }
 
@@ -39,7 +44,7 @@ public class MainWindow extends javax.swing.JFrame {
     private void initComponents() {
 
         jPanel1 = new javax.swing.JPanel();
-        jPanel2 = new GameBoardPanel();
+        jPanel2 = new GameBoardPanel(board);
         jPanel3 = new javax.swing.JPanel();
         jButton1 = new javax.swing.JButton();
         jLabel1 = new javax.swing.JLabel();
@@ -55,6 +60,7 @@ public class MainWindow extends javax.swing.JFrame {
         jPanel1.setPreferredSize(new java.awt.Dimension(MAIN_WINDOW_WIDTH, MAIN_WINDOW_HEIGHT));
 
         jPanel2.setPreferredSize(new java.awt.Dimension(MAIN_WINDOW_WIDTH - (MARGIN * 2), MAIN_WINDOW_WIDTH  - (MARGIN * 2)));
+        jPanel2.addMouseListener((GameBoardPanel)jPanel2);
 
         javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
         jPanel2.setLayout(jPanel2Layout);
@@ -159,6 +165,7 @@ public class MainWindow extends javax.swing.JFrame {
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
         // TODO add your handling code here:
         drawGrid();
+        drawFigures();
     }//GEN-LAST:event_jButton1ActionPerformed
 
     /**
@@ -173,7 +180,7 @@ public class MainWindow extends javax.swing.JFrame {
     }
 
     public void drawGrid() {
-        try {
+//        try {
             Graphics panel = jPanel2.getGraphics();
             panel.setColor(Color.DARK_GRAY);
             for (int i = 1; i < 3; i++) {
@@ -181,56 +188,120 @@ public class MainWindow extends javax.swing.JFrame {
                 panel.fillRect(MARGIN, (MAIN_WINDOW_WIDTH - (MARGIN * 2)) / 3 * i, MAIN_WINDOW_WIDTH - MARGIN * 4, MARGIN);
             }
 
+//            Image cross = ImageIO.read(getClass().getClassLoader().getResource("icons/cross.png"));
+//            Image circle = ImageIO.read(getClass().getClassLoader().getResource("icons/circle.png"));
+//            Image crossWin = ImageIO.read(getClass().getClassLoader().getResource("icons/cross_WIN.png"));
+//            Image circleWin = ImageIO.read(getClass().getClassLoader().getResource("icons/circle_WIN.png"));
+//
+//            System.out.println(">> " + cross.getHeight(null));
+//            int imgSize = cross.getWidth(null);
+//            int start = MARGIN + BOX_SIZE / 2 - imgSize / 2;
+//            int offset = BOX_SIZE + MARGIN / 2;
+//
+//            int crossLineStart = BOX_SIZE / 2 + MARGIN;
+//            int crossLineOffset = BOX_SIZE + MARGIN / 2;
+//
+//            System.out.println("start=" + start);
+//
+//            panel.drawImage(cross, start, start, null);
+//            panel.drawImage(circle, start + offset, start + offset, null);
+////            panel.drawImage(crossWin, 210, 40, null);
+////            panel.drawImage(circleWin, 40, 210, null);
+//
+//            panel.drawImage(cross, start + offset, start + offset * 0, null);
+//            panel.drawImage(cross, start + offset * 2, start + offset * 1, null);
+//            panel.drawImage(cross, start + offset * 0, start + offset * 1, null);
+//
+//            panel.drawImage(circleWin, start + offset * 0, start + offset * 2, null);
+//            panel.drawImage(circleWin, start + offset * 1, start + offset * 2, null);
+//            panel.drawImage(circleWin, start + offset * 2, start + offset * 2, null);
+//
+//            //cross center horisontal
+//            panel.drawLine(
+//                    crossLineStart + crossLineOffset * 0, crossLineStart + crossLineOffset * 1,
+//                    crossLineStart + crossLineOffset * 2, crossLineStart + crossLineOffset * 1);
+//
+//            //cross center vertical
+//            panel.drawLine(
+//                    crossLineStart + crossLineOffset * 1, crossLineStart + crossLineOffset * 0,
+//                    crossLineStart + crossLineOffset * 1, crossLineStart + crossLineOffset * 2);
+//
+//            //cross diagonal left
+//            panel.drawLine(
+//                    crossLineStart + crossLineOffset * 0, crossLineStart + crossLineOffset * 0,
+//                    crossLineStart + crossLineOffset * 2, crossLineStart + crossLineOffset * 2);
+//
+//            //cross diagonal right
+//            panel.drawLine(
+//                    crossLineStart + crossLineOffset * 0, crossLineStart + crossLineOffset * 2,
+//                    crossLineStart + crossLineOffset * 2, crossLineStart + crossLineOffset * 0);
+//
+//        } catch (IOException ex) {
+//            Logger.getLogger(MainWindow.class.getName()).log(Level.SEVERE, null, ex);
+//        }
+    }
+
+    private void drawFigures() {
+        try {
+            Graphics panel = jPanel2.getGraphics();
             Image cross = ImageIO.read(getClass().getClassLoader().getResource("icons/cross.png"));
             Image circle = ImageIO.read(getClass().getClassLoader().getResource("icons/circle.png"));
             Image crossWin = ImageIO.read(getClass().getClassLoader().getResource("icons/cross_WIN.png"));
             Image circleWin = ImageIO.read(getClass().getClassLoader().getResource("icons/circle_WIN.png"));
             
-            System.out.println(">> " + cross.getHeight(null));
-            int imgSize = cross.getWidth(null);
-            int start = MARGIN + BOX_SIZE / 2 - imgSize / 2;
-            int offset = BOX_SIZE + MARGIN / 2;
-
-            int crossLineStart = BOX_SIZE / 2 + MARGIN;
-            int crossLineOffset = BOX_SIZE + MARGIN / 2;
-
-            System.out.println("start=" + start);
-
-            panel.drawImage(cross, start, start, null);
-            panel.drawImage(circle, start + offset, start + offset, null);
-//            panel.drawImage(crossWin, 210, 40, null);
-//            panel.drawImage(circleWin, 40, 210, null);
-
-            panel.drawImage(cross, start + offset, start + offset * 0, null);
-            panel.drawImage(cross, start + offset * 2, start + offset * 1, null);
-            panel.drawImage(cross, start + offset * 0, start + offset * 1, null);
-
-            panel.drawImage(circleWin, start + offset * 0, start + offset * 2, null);
-            panel.drawImage(circleWin, start + offset * 1, start + offset * 2, null);
-            panel.drawImage(circleWin, start + offset * 2, start + offset * 2, null);
-
-            //cross center horisontal
-            panel.drawLine(
-                    crossLineStart + crossLineOffset * 0, crossLineStart + crossLineOffset * 1, 
-                    crossLineStart + crossLineOffset * 2, crossLineStart + crossLineOffset * 1);
-            
-            //cross center vertical
-            panel.drawLine(
-                    crossLineStart + crossLineOffset * 1, crossLineStart + crossLineOffset * 0, 
-                    crossLineStart + crossLineOffset * 1, crossLineStart + crossLineOffset * 2);
-            
-            //cross diagonal left
-            panel.drawLine(
-                    crossLineStart + crossLineOffset * 0, crossLineStart + crossLineOffset * 0, 
-                    crossLineStart + crossLineOffset * 2, crossLineStart + crossLineOffset * 2);
-            
-            //cross diagonal right
-            panel.drawLine(
-                    crossLineStart + crossLineOffset * 0, crossLineStart + crossLineOffset * 2, 
-                    crossLineStart + crossLineOffset * 2, crossLineStart + crossLineOffset * 0);
-            
+            for (int y = 0; y < board.getVerticalSze(); y++) {
+                for (int x = 0; x < board.getHorisontalSze(); x++) {
+                    // TODO: win line draw
+                    int value = board.getboxValue(x, y);
+                    if (value == Role.CROSS.getValue()) {
+                        drawFigure(cross, x, y);
+                    } else if (value == Role.NOUGHT.getValue()) {
+                        drawFigure(circle, x, y);
+                    }
+                }
+            }
             
 
+//            System.out.println(">> " + cross.getHeight(null));
+//            int imgSize = cross.getWidth(null);
+//            int start = MARGIN + BOX_SIZE / 2 - imgSize / 2;
+//            int offset = BOX_SIZE + MARGIN / 2;
+//
+//            int crossLineStart = BOX_SIZE / 2 + MARGIN;
+//            int crossLineOffset = BOX_SIZE + MARGIN / 2;
+//
+//            System.out.println("start=" + start);
+//
+//            panel.drawImage(cross, start, start, null);
+//            panel.drawImage(circle, start + offset, start + offset, null);
+//
+//            panel.drawImage(cross, start + offset, start + offset * 0, null);
+//            panel.drawImage(cross, start + offset * 2, start + offset * 1, null);
+//            panel.drawImage(cross, start + offset * 0, start + offset * 1, null);
+//
+//            panel.drawImage(circleWin, start + offset * 0, start + offset * 2, null);
+//            panel.drawImage(circleWin, start + offset * 1, start + offset * 2, null);
+//            panel.drawImage(circleWin, start + offset * 2, start + offset * 2, null);
+//
+//            //cross center horisontal
+//            panel.drawLine(
+//                    crossLineStart + crossLineOffset * 0, crossLineStart + crossLineOffset * 1,
+//                    crossLineStart + crossLineOffset * 2, crossLineStart + crossLineOffset * 1);
+//
+//            //cross center vertical
+//            panel.drawLine(
+//                    crossLineStart + crossLineOffset * 1, crossLineStart + crossLineOffset * 0,
+//                    crossLineStart + crossLineOffset * 1, crossLineStart + crossLineOffset * 2);
+//
+//            //cross diagonal left
+//            panel.drawLine(
+//                    crossLineStart + crossLineOffset * 0, crossLineStart + crossLineOffset * 0,
+//                    crossLineStart + crossLineOffset * 2, crossLineStart + crossLineOffset * 2);
+//
+//            //cross diagonal right
+//            panel.drawLine(
+//                    crossLineStart + crossLineOffset * 0, crossLineStart + crossLineOffset * 2,
+//                    crossLineStart + crossLineOffset * 2, crossLineStart + crossLineOffset * 0);
         } catch (IOException ex) {
             Logger.getLogger(MainWindow.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -246,4 +317,18 @@ public class MainWindow extends javax.swing.JFrame {
     private javax.swing.JPanel jPanel2;
     private javax.swing.JPanel jPanel3;
     // End of variables declaration//GEN-END:variables
+
+    private void drawFigure(Image figure, int x, int y) {
+        Graphics panel = jPanel2.getGraphics();
+        int imgSize = figure.getWidth(null);
+        int start = MARGIN + BOX_SIZE / 2 - imgSize / 2;
+        int offset = BOX_SIZE + MARGIN / 2;
+
+        int crossLineStart = BOX_SIZE / 2 + MARGIN;
+        int crossLineOffset = BOX_SIZE + MARGIN / 2;
+        //panel.drawImage(figure, start + offset, start + offset * 0, null);
+        //panel.drawImage(figure, start + offset * 2, start + offset * 1, null);
+        panel.drawImage(figure, start + offset * x, start + offset * y, null);
+    }
+
 }
