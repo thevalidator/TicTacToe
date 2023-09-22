@@ -24,7 +24,7 @@ import ru.thevalidator.tictactoe.model.Role;
  */
 public class GameBoardPanel extends javax.swing.JPanel implements MouseListener {
 
-    private final Board board;
+    private volatile Board board;
     private boolean isPlayer;
 
     /**
@@ -84,7 +84,8 @@ public class GameBoardPanel extends javax.swing.JPanel implements MouseListener 
                 board.setBoxValue(x, y, role);
             }
             //drawGrid();
-            drawFigures(getGraphics());
+            //drawFigures(getGraphics());
+            repaint(); 
             
         }
 
@@ -129,7 +130,6 @@ public class GameBoardPanel extends javax.swing.JPanel implements MouseListener 
 
     private void drawFigures(Graphics g) {
         try {
-            //Graphics panel = jPanel2.getGraphics();
             Image cross = ImageIO.read(getClass().getClassLoader().getResource("icons/cross.png"));
             Image circle = ImageIO.read(getClass().getClassLoader().getResource("icons/circle.png"));
             Image crossWin = ImageIO.read(getClass().getClassLoader().getResource("icons/cross_WIN.png"));
