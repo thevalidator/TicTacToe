@@ -30,11 +30,11 @@ public class Board {
         board[y][x] = role.getValue();
     }
     
-    public int getVerticalSze() {
+    public int getVerticalSize() {
         return board.length;
     }
     
-    public int getHorisontalSze() {
+    public int getHorisontalSize() {
         return board[0].length;
     }
     
