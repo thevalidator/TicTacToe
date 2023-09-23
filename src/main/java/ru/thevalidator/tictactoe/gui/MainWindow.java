@@ -7,7 +7,6 @@ import com.formdev.flatlaf.FlatDarkLaf;
 import static ru.thevalidator.tictactoe.gui.Settings.MAIN_WINDOW_HEIGHT;
 import static ru.thevalidator.tictactoe.gui.Settings.MAIN_WINDOW_WIDTH;
 import static ru.thevalidator.tictactoe.gui.Settings.MARGIN;
-import ru.thevalidator.tictactoe.model.Board;
 
 /**
  *
@@ -15,13 +14,10 @@ import ru.thevalidator.tictactoe.model.Board;
  */
 public class MainWindow extends javax.swing.JFrame {
 
-    private Board board;
-
     /**
      * Creates new form MainWindow
      */
     public MainWindow() {
-        board = new Board();
         initComponents();
     }
 
@@ -35,8 +31,7 @@ public class MainWindow extends javax.swing.JFrame {
     private void initComponents() {
 
         backgroundPanel = new javax.swing.JPanel();
-        gameBoardPanel = new GameBoardPanel(board);
-        board.setPanel(gameBoardPanel);
+        gameBoardPanel = new GameBoardPanel();
         infoPanel = new javax.swing.JPanel();
         jButton1 = new javax.swing.JButton();
         jLabel1 = new javax.swing.JLabel();
@@ -175,7 +170,7 @@ public class MainWindow extends javax.swing.JFrame {
 
     private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
         // TODO add your handling code here:
-        board.clearBoard();
+        ((GameBoardPanel) gameBoardPanel).clearBoard();
     }//GEN-LAST:event_jButton2ActionPerformed
 
     /**

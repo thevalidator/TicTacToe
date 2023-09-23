@@ -80,8 +80,7 @@
             </Property>
           </Properties>
           <AuxValues>
-            <AuxValue name="JavaCodeGenerator_CreateCodeCustom" type="java.lang.String" value="new GameBoardPanel(board)"/>
-            <AuxValue name="JavaCodeGenerator_CreateCodePost" type="java.lang.String" value="board.setPanel(gameBoardPanel);&#xd;&#xa;"/>
+            <AuxValue name="JavaCodeGenerator_CreateCodeCustom" type="java.lang.String" value="new GameBoardPanel()"/>
             <AuxValue name="JavaCodeGenerator_InitCodePost" type="java.lang.String" value="gameBoardPanel.addMouseListener((GameBoardPanel)gameBoardPanel);"/>
             <AuxValue name="JavaCodeGenerator_SerializeTo" type="java.lang.String" value="MainWindow_jPanel2"/>
           </AuxValues>

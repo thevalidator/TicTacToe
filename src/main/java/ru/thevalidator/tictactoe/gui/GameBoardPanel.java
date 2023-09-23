@@ -24,17 +24,18 @@ import ru.thevalidator.tictactoe.model.Role;
  */
 public class GameBoardPanel extends javax.swing.JPanel implements MouseListener {
 
-    private volatile Board board;
+    private final Board board;
     private boolean isPlayer;
+    private int actionsNumber;
 
     /**
      * Creates new form GameBoardPanel
-     *
-     * @param board
      */
-    public GameBoardPanel(Board board) {
-        this.board = board;
+    public GameBoardPanel() {
+        resetActions();
+        this.board = new Board();
         initComponents();
+        //addMouseListener(this);
     }
 
     /**
@@ -77,17 +78,17 @@ public class GameBoardPanel extends javax.swing.JPanel implements MouseListener 
         if (gamingAreaClicked(xClickPos, yClickPos)) {
             int x = getColumnNumber(xClickPos);
             int y = getRowNumber(yClickPos);
-            System.out.printf("POINT[x=%d:y=%d] value=%d\n", x, y, board.getboxValue(x, y));
             if (board.getboxValue(x, y) == 0) {
                 isPlayer = !isPlayer;
                 Role role = isPlayer ? Role.CROSS : Role.NOUGHT;
                 board.setBoxValue(x, y, role);
+                actionsNumber++;
             }
             if (isFinished()) {
                 // TO DO: crossing line if win
             }
             repaint();
-
+            System.out.printf("POINT[x=%d:y=%d] value=%d  -  Step: %d\n", x, y, board.getboxValue(x, y), actionsNumber);
         }
 
     }
@@ -120,7 +121,6 @@ public class GameBoardPanel extends javax.swing.JPanel implements MouseListener 
     }
 
     public void drawGrid(Graphics panel) {
-        //Graphics panel = getGraphics();
         panel.setColor(Color.DARK_GRAY);
         for (int i = 1; i < 3; i++) {
             panel.fillRect((MAIN_WINDOW_WIDTH - (MARGIN * 2)) / 3 * i, MARGIN, MARGIN, MAIN_WINDOW_WIDTH - MARGIN * 4);
@@ -172,6 +172,16 @@ public class GameBoardPanel extends javax.swing.JPanel implements MouseListener 
         drawGrid(g);
         drawFigures(g);
     }
+    
+    public void clearBoard() {
+        clearValues();
+        repaint();
+    }
+    
+    private void clearValues() {
+        board.resetValues();
+        resetActions();
+    }
 
     private boolean isFinished() {
         boolean isFinished = false;
@@ -219,11 +229,18 @@ public class GameBoardPanel extends javax.swing.JPanel implements MouseListener 
         if (Math.abs(sum2) == 3) {
             isFinished = true;
         }
+        
+        if (!isFinished && actionsNumber == 9) {
+            isFinished = true;
+        }
 
         System.out.println(">>> IS FINISHED: " + isFinished);
         return isFinished;
     }
-
+    
+    private void resetActions() {
+        actionsNumber = 0;
+    }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     // End of variables declaration//GEN-END:variables
