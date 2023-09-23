@@ -17,6 +17,7 @@ import static ru.thevalidator.tictactoe.gui.Settings.MAIN_WINDOW_WIDTH;
 import static ru.thevalidator.tictactoe.gui.Settings.MARGIN;
 import ru.thevalidator.tictactoe.model.Board;
 import ru.thevalidator.tictactoe.model.Role;
+import ru.thevalidator.tictactoe.model.StatusData;
 
 /**
  *
@@ -24,20 +25,29 @@ import ru.thevalidator.tictactoe.model.Role;
  */
 public class GameBoardPanel extends javax.swing.JPanel implements MouseListener {
 
+    private StatusData status;
     private final Board board;
-    private boolean isPlayer;
+    private boolean isCrosses;
     private int actionsNumber;
+    private Image cross;
+    private Image circle;
+    private Image crossWin;
+    private Image circleWin;
 
     /**
      * Creates new form GameBoardPanel
      */
     public GameBoardPanel() {
+        loadImages();
         resetActions();
         this.board = new Board();
         initComponents();
-        //addMouseListener(this);
     }
 
+    public void setStatus(StatusData status) {
+        this.status = status;
+    }
+    
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -73,21 +83,24 @@ public class GameBoardPanel extends javax.swing.JPanel implements MouseListener 
     public void mouseClicked(MouseEvent e) {
         int xClickPos = e.getX();
         int yClickPos = e.getY();
-        System.out.printf("x=%d y=%d\n", xClickPos, yClickPos);
-
         if (gamingAreaClicked(xClickPos, yClickPos)) {
             int x = getColumnNumber(xClickPos);
             int y = getRowNumber(yClickPos);
             if (board.getboxValue(x, y) == 0) {
-                isPlayer = !isPlayer;
-                Role role = isPlayer ? Role.CROSS : Role.NOUGHT;
+                Role role = isCrosses ? Role.CROSS : Role.NOUGHT;
                 board.setBoxValue(x, y, role);
                 actionsNumber++;
             }
+            isCrosses = !isCrosses;
             if (isFinished()) {
+                status.setStatus("FINISHED");
                 // TO DO: crossing line if win
+            } else {
+                status.setStatus(isCrosses ? "CROSSES TURN" : "NOUGHTS TURN");
             }
             repaint();
+
+            System.out.printf("x=%d y=%d\n", xClickPos, yClickPos);
             System.out.printf("POINT[x=%d:y=%d] value=%d  -  Step: %d\n", x, y, board.getboxValue(x, y), actionsNumber);
         }
 
@@ -129,30 +142,20 @@ public class GameBoardPanel extends javax.swing.JPanel implements MouseListener 
     }
 
     private void drawFigures(Graphics g) {
-        try {
-            Image cross = ImageIO.read(getClass().getClassLoader().getResource("icons/cross.png"));
-            Image circle = ImageIO.read(getClass().getClassLoader().getResource("icons/circle.png"));
-            Image crossWin = ImageIO.read(getClass().getClassLoader().getResource("icons/cross_WIN.png"));
-            Image circleWin = ImageIO.read(getClass().getClassLoader().getResource("icons/circle_WIN.png"));
-
-            for (int y = 0; y < board.getVerticalSize(); y++) {
-                for (int x = 0; x < board.getHorisontalSize(); x++) {
-                    // TODO: refactor selection figure to draw logic
-                    int value = board.getboxValue(x, y);
-                    if (value == Role.CROSS_WIN.getValue()) {
-                        drawFigure(g, crossWin, x, y);
-                    } else if (value == Role.NOUGHT_WIN.getValue()) {
-                        drawFigure(g, circleWin, x, y);
-                    } else if (value == Role.CROSS.getValue()) {
-                        drawFigure(g, cross, x, y);
-                    } else if (value == Role.NOUGHT.getValue()) {
-                        drawFigure(g, circle, x, y);
-                    }
+        for (int y = 0; y < board.getVerticalSize(); y++) {
+            for (int x = 0; x < board.getHorisontalSize(); x++) {
+                // TODO: refactor selection figure to draw logic
+                int value = board.getboxValue(x, y);
+                if (value == Role.CROSS_WIN.getValue()) {
+                    drawFigure(g, crossWin, x, y);
+                } else if (value == Role.NOUGHT_WIN.getValue()) {
+                    drawFigure(g, circleWin, x, y);
+                } else if (value == Role.CROSS.getValue()) {
+                    drawFigure(g, cross, x, y);
+                } else if (value == Role.NOUGHT.getValue()) {
+                    drawFigure(g, circle, x, y);
                 }
             }
-
-        } catch (IOException ex) {
-            Logger.getLogger(MainWindow.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
 
@@ -172,64 +175,31 @@ public class GameBoardPanel extends javax.swing.JPanel implements MouseListener 
         drawGrid(g);
         drawFigures(g);
     }
-    
+
     public void clearBoard() {
         clearValues();
         repaint();
     }
-    
+
     private void clearValues() {
+        status.setStatus(isCrosses ? "CROSSES TURN" : "NOUGHTS TURN");
         board.resetValues();
         resetActions();
     }
 
     private boolean isFinished() {
-        boolean isFinished = false;
 
-        for (int y = 0; y < board.getVerticalSize(); y++) {
-            int sum = 0;
-            for (int x = 0; x < board.getHorisontalSize(); x++) {
-                sum += board.getboxValue(x, y);
-            }
-            if (Math.abs(sum) == 3) {
-                isFinished = true;
-                break;
-            }
-
+        boolean isFinished;
+        isFinished = checkHorisontals();
+        if (!isFinished) {
+            isFinished = checkVerticals();
         }
-
-        for (int x = 0; x < board.getHorisontalSize(); x++) {
-            int sum = 0;
-            for (int y = 0; y < board.getVerticalSize(); y++) {
-                sum += board.getboxValue(x, y);
-            }
-            if (Math.abs(sum) == 3) {
-                isFinished = true;
-                break;
-            }
-
+        if (!isFinished) {
+            isFinished = checkLeftDiagonal();
         }
-
-        int sum = 0;
-        for (int i = 0; i < board.getVerticalSize(); i++) {
-            sum += board.getboxValue(i, i);
+        if (!isFinished) {
+            isFinished = checkRightDiagonal();
         }
-        if (Math.abs(sum) == 3) {
-            isFinished = true;
-        }
-        
-        int sum2 = 0;
-        int x = board.getVerticalSize() - 1;
-        int y = 0;
-        for (; x >= 0;) {
-            sum2 += board.getboxValue(x, y);
-            x--;
-            y++;
-        }
-        if (Math.abs(sum2) == 3) {
-            isFinished = true;
-        }
-        
         if (!isFinished && actionsNumber == 9) {
             isFinished = true;
         }
@@ -237,9 +207,90 @@ public class GameBoardPanel extends javax.swing.JPanel implements MouseListener 
         System.out.println(">>> IS FINISHED: " + isFinished);
         return isFinished;
     }
-    
+
+    private boolean checkRightDiagonal() {
+        int sum = 0;
+        int x = board.getVerticalSize() - 1;
+        int y = 0;
+        for (; x >= 0;) {
+            sum += board.getboxValue(x, y);
+            x--;
+            y++;
+        }
+
+        if (threeInARow(sum)) {
+            updateWinStats(sum);
+            return true;
+        }
+        return false;
+    }
+
+    private boolean checkLeftDiagonal() {
+        int sum = 0;
+        for (int i = 0; i < board.getVerticalSize(); i++) {
+            sum += board.getboxValue(i, i);
+        }
+        if (threeInARow(sum)) {
+            updateWinStats(sum);
+            return true;
+        }
+        return false;
+    }
+
+    private boolean checkVerticals() {
+        for (int x = 0; x < board.getHorisontalSize(); x++) {
+            int sum = 0;
+            for (int y = 0; y < board.getVerticalSize(); y++) {
+                sum += board.getboxValue(x, y);
+            }
+            if (threeInARow(sum)) {
+                updateWinStats(sum);
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private void updateWinStats(int sum) {
+        if (sum > 0) {
+            status.incrementWinValue(Role.CROSS);
+        } else {
+            status.incrementWinValue(Role.NOUGHT);
+        }
+    }
+
+    private boolean checkHorisontals() {
+        for (int y = 0; y < board.getVerticalSize(); y++) {
+            int sum = 0;
+            for (int x = 0; x < board.getHorisontalSize(); x++) {
+                sum += board.getboxValue(x, y);
+            }
+            if (threeInARow(sum)) {
+                updateWinStats(sum);
+                //markWinLine()
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private static boolean threeInARow(int sum) {
+        return Math.abs(sum) == 3;
+    }
+
     private void resetActions() {
         actionsNumber = 0;
+    }
+
+    private void loadImages() {
+        try {
+            cross = ImageIO.read(getClass().getClassLoader().getResource("icons/cross.png"));
+            circle = ImageIO.read(getClass().getClassLoader().getResource("icons/circle.png"));
+            crossWin = ImageIO.read(getClass().getClassLoader().getResource("icons/cross_WIN.png"));
+            circleWin = ImageIO.read(getClass().getClassLoader().getResource("icons/circle_WIN.png"));
+        } catch (IOException ex) {
+            Logger.getLogger(GameBoardPanel.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
