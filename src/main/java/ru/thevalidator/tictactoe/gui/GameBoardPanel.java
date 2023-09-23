@@ -61,11 +61,11 @@ public class GameBoardPanel extends javax.swing.JPanel implements MouseListener 
     }// </editor-fold>//GEN-END:initComponents
 
     private int getRowNumber(int y) {
-        return y / (getSize().height / board.getVerticalSze());
+        return y / (getSize().height / board.getVerticalSize());
     }
 
     private int getColumnNumber(int x) {
-        return x / ((getSize().width / board.getHorisontalSze()));
+        return x / ((getSize().width / board.getHorisontalSize()));
     }
 
     @Override
@@ -83,15 +83,15 @@ public class GameBoardPanel extends javax.swing.JPanel implements MouseListener 
                 Role role = isPlayer ? Role.CROSS : Role.NOUGHT;
                 board.setBoxValue(x, y, role);
             }
-            //drawGrid();
-            //drawFigures(getGraphics());
-            repaint(); 
-            
+            if (isFinished()) {
+                // TO DO: crossing line if win
+            }
+            repaint();
+
         }
 
-        
     }
-    
+
     private boolean gamingAreaClicked(int x, int y) {
         // TODO: fix gaming area for grid lines (exclude lines area)
         boolean a = x >= MARGIN && x <= (MAIN_WINDOW_WIDTH - MARGIN);
@@ -118,7 +118,7 @@ public class GameBoardPanel extends javax.swing.JPanel implements MouseListener 
     public void mouseExited(MouseEvent e) {
         //throw new UnsupportedOperationException("Not supported yet.");
     }
-    
+
     public void drawGrid(Graphics panel) {
         //Graphics panel = getGraphics();
         panel.setColor(Color.DARK_GRAY);
@@ -135,8 +135,8 @@ public class GameBoardPanel extends javax.swing.JPanel implements MouseListener 
             Image crossWin = ImageIO.read(getClass().getClassLoader().getResource("icons/cross_WIN.png"));
             Image circleWin = ImageIO.read(getClass().getClassLoader().getResource("icons/circle_WIN.png"));
 
-            for (int y = 0; y < board.getVerticalSze(); y++) {
-                for (int x = 0; x < board.getHorisontalSze(); x++) {
+            for (int y = 0; y < board.getVerticalSize(); y++) {
+                for (int x = 0; x < board.getHorisontalSize(); x++) {
                     // TODO: refactor selection figure to draw logic
                     int value = board.getboxValue(x, y);
                     if (value == Role.CROSS_WIN.getValue()) {
@@ -150,12 +150,12 @@ public class GameBoardPanel extends javax.swing.JPanel implements MouseListener 
                     }
                 }
             }
-            
+
         } catch (IOException ex) {
             Logger.getLogger(MainWindow.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
-    
+
     private void drawFigure(Graphics g, Image figure, int x, int y) {
         int imgSize = figure.getWidth(null);
         int start = MARGIN + BOX_SIZE / 2 - imgSize / 2;
@@ -171,6 +171,57 @@ public class GameBoardPanel extends javax.swing.JPanel implements MouseListener 
         super.paintComponent(g);
         drawGrid(g);
         drawFigures(g);
+    }
+
+    private boolean isFinished() {
+        boolean isFinished = false;
+
+        for (int y = 0; y < board.getVerticalSize(); y++) {
+            int sum = 0;
+            for (int x = 0; x < board.getHorisontalSize(); x++) {
+                sum += board.getboxValue(x, y);
+            }
+            if (Math.abs(sum) == 3) {
+                isFinished = true;
+                break;
+            }
+
+        }
+
+        for (int x = 0; x < board.getHorisontalSize(); x++) {
+            int sum = 0;
+            for (int y = 0; y < board.getVerticalSize(); y++) {
+                sum += board.getboxValue(x, y);
+            }
+            if (Math.abs(sum) == 3) {
+                isFinished = true;
+                break;
+            }
+
+        }
+
+        int sum = 0;
+        for (int i = 0; i < board.getVerticalSize(); i++) {
+            sum += board.getboxValue(i, i);
+        }
+        if (Math.abs(sum) == 3) {
+            isFinished = true;
+        }
+        
+        int sum2 = 0;
+        int x = board.getVerticalSize() - 1;
+        int y = 0;
+        for (; x >= 0;) {
+            sum2 += board.getboxValue(x, y);
+            x--;
+            y++;
+        }
+        if (Math.abs(sum2) == 3) {
+            isFinished = true;
+        }
+
+        System.out.println(">>> IS FINISHED: " + isFinished);
+        return isFinished;
     }
 
 
