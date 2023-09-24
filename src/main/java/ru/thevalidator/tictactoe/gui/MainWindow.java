@@ -4,9 +4,17 @@
 package ru.thevalidator.tictactoe.gui;
 
 import com.formdev.flatlaf.FlatDarkLaf;
+import java.awt.Component;
+import java.awt.HeadlessException;
+import javax.swing.BorderFactory;
+import javax.swing.JEditorPane;
+import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+import javax.swing.JScrollPane;
 import static ru.thevalidator.tictactoe.gui.Settings.MAIN_WINDOW_HEIGHT;
 import static ru.thevalidator.tictactoe.gui.Settings.MAIN_WINDOW_WIDTH;
 import static ru.thevalidator.tictactoe.gui.Settings.MARGIN;
+import ru.thevalidator.tictactoe.model.Role;
 import ru.thevalidator.tictactoe.model.StatusData;
 
 /**
@@ -20,6 +28,7 @@ public class MainWindow extends javax.swing.JFrame {
      */
     public MainWindow() {
         initComponents();
+        setStartRole();
     }
 
     /**
@@ -41,12 +50,13 @@ public class MainWindow extends javax.swing.JFrame {
         newGameButton = new javax.swing.JButton();
         statusLabel = new javax.swing.JLabel();
         jMenuBar1 = new javax.swing.JMenuBar();
-        jMenu1 = new javax.swing.JMenu();
-        jMenu2 = new javax.swing.JMenu();
+        aboutMenu = new javax.swing.JMenu();
+        infoMenuItem = new javax.swing.JMenuItem();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("Tic-Tac-Toe");
         setPreferredSize(new java.awt.Dimension(MAIN_WINDOW_WIDTH, MAIN_WINDOW_HEIGHT));
+        setResizable(false);
 
         backgroundPanel.setBackground(new java.awt.Color(0, 102, 153));
         backgroundPanel.setPreferredSize(new java.awt.Dimension(MAIN_WINDOW_WIDTH, MAIN_WINDOW_HEIGHT));
@@ -66,21 +76,29 @@ public class MainWindow extends javax.swing.JFrame {
             .addGap(0, 10, Short.MAX_VALUE)
         );
 
-        crossesValueLabel.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
+        infoPanel.setBackground(new java.awt.Color(0, 102, 153));
+
+        crossesValueLabel.setFont(new java.awt.Font("Segoe UI", 1, 16)); // NOI18N
+        crossesValueLabel.setForeground(java.awt.Color.white);
         crossesValueLabel.setText("0");
 
-        noughtsValueLabel.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
+        noughtsValueLabel.setFont(new java.awt.Font("Segoe UI", 1, 16)); // NOI18N
+        noughtsValueLabel.setForeground(java.awt.Color.white);
         noughtsValueLabel.setText("0");
 
-        crossesLabel.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
+        crossesLabel.setFont(new java.awt.Font("Segoe UI", 1, 16)); // NOI18N
+        crossesLabel.setForeground(java.awt.Color.white);
         crossesLabel.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
         crossesLabel.setText("CROSSES:");
 
-        noughtsLabel.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
+        noughtsLabel.setFont(new java.awt.Font("Segoe UI", 1, 16)); // NOI18N
+        noughtsLabel.setForeground(java.awt.Color.white);
         noughtsLabel.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
         noughtsLabel.setText("NOUGHTS:");
 
+        newGameButton.setBackground(new java.awt.Color(204, 204, 204));
         newGameButton.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
+        newGameButton.setForeground(new java.awt.Color(51, 51, 51));
         newGameButton.setText("NEW GAME");
         newGameButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -90,7 +108,7 @@ public class MainWindow extends javax.swing.JFrame {
 
         statusLabel.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
         statusLabel.setForeground(new java.awt.Color(0, 243, 2));
-        statusLabel.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        statusLabel.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
         statusLabel.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
 
         javax.swing.GroupLayout infoPanelLayout = new javax.swing.GroupLayout(infoPanel);
@@ -98,36 +116,39 @@ public class MainWindow extends javax.swing.JFrame {
         infoPanelLayout.setHorizontalGroup(
             infoPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(infoPanelLayout.createSequentialGroup()
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addContainerGap(42, Short.MAX_VALUE)
                 .addGroup(infoPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                     .addComponent(crossesLabel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(noughtsLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 90, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(18, 18, 18)
                 .addGroup(infoPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                    .addComponent(crossesValueLabel, javax.swing.GroupLayout.DEFAULT_SIZE, 40, Short.MAX_VALUE)
-                    .addComponent(noughtsValueLabel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(crossesValueLabel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(noughtsValueLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 50, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 42, Short.MAX_VALUE)
                 .addComponent(statusLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 165, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(18, 18, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addComponent(newGameButton, javax.swing.GroupLayout.PREFERRED_SIZE, 108, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addGap(26, 26, 26))
         );
         infoPanelLayout.setVerticalGroup(
             infoPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(infoPanelLayout.createSequentialGroup()
-                .addContainerGap(217, Short.MAX_VALUE)
+                .addContainerGap(209, Short.MAX_VALUE)
                 .addGroup(infoPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                    .addComponent(statusLabel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addGroup(infoPanelLayout.createSequentialGroup()
-                        .addGroup(infoPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(crossesLabel, javax.swing.GroupLayout.DEFAULT_SIZE, 22, Short.MAX_VALUE)
-                            .addComponent(crossesValueLabel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                        .addGroup(infoPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                            .addComponent(crossesLabel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(crossesValueLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addGroup(infoPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                            .addComponent(noughtsLabel, javax.swing.GroupLayout.DEFAULT_SIZE, 22, Short.MAX_VALUE)
-                            .addComponent(noughtsValueLabel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
-                    .addComponent(newGameButton, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(statusLabel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                .addContainerGap(218, Short.MAX_VALUE))
+                            .addComponent(noughtsValueLabel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(noughtsLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE))))
+                .addContainerGap(210, Short.MAX_VALUE))
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, infoPanelLayout.createSequentialGroup()
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(newGameButton)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
         javax.swing.GroupLayout backgroundPanelLayout = new javax.swing.GroupLayout(backgroundPanel);
@@ -151,11 +172,17 @@ public class MainWindow extends javax.swing.JFrame {
                 .addContainerGap())
         );
 
-        jMenu1.setText("File");
-        jMenuBar1.add(jMenu1);
+        aboutMenu.setText("About");
 
-        jMenu2.setText("Edit");
-        jMenuBar1.add(jMenu2);
+        infoMenuItem.setText("Info");
+        infoMenuItem.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                infoMenuItemActionPerformed(evt);
+            }
+        });
+        aboutMenu.add(infoMenuItem);
+
+        jMenuBar1.add(aboutMenu);
 
         setJMenuBar(jMenuBar1);
 
@@ -174,15 +201,35 @@ public class MainWindow extends javax.swing.JFrame {
         setLocationRelativeTo(null);
     }// </editor-fold>//GEN-END:initComponents
 
+    private void setStartRole() throws HeadlessException {
+        var panel = new RoleChooser();
+        JOptionPane.showConfirmDialog(this, panel, "Preparing", JOptionPane.PLAIN_MESSAGE);
+        ((GameBoardPanel) gameBoardPanel).setIsCrosses(panel.getSelectedRole().equals(Role.CROSS));
+    }
+    
     private void newGameButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_newGameButtonActionPerformed
-        // TODO add your handling code here:
         ((GameBoardPanel) gameBoardPanel).clearBoard();
     }//GEN-LAST:event_newGameButtonActionPerformed
+
+    private void infoMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_infoMenuItemActionPerformed
+        Component component = new JLabel();
+        JScrollPane jScrollPane = new JScrollPane(component);
+        jScrollPane.setBorder(BorderFactory.createEmptyBorder());
+        JEditorPane content = new AboutWindowPanel();
+        jScrollPane.setViewportView(content);
+        JLabel header = new JLabel();
+        header.setText("TIC-TAC-TOE");
+        header.setFont(new java.awt.Font("Segoe UI", 1, 14));
+        header.setHorizontalAlignment(javax.swing.JTextField.CENTER);
+        header.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+        jScrollPane.setColumnHeaderView(header);
+        JOptionPane.showMessageDialog(this, jScrollPane, "About", JOptionPane.PLAIN_MESSAGE);
+    }//GEN-LAST:event_infoMenuItemActionPerformed
 
     /**
      * @param args the command line arguments
      */
-    public static void main(String args[]) {
+    public static void start(String args[]) {
         FlatDarkLaf.setup();
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(() -> {
@@ -191,19 +238,18 @@ public class MainWindow extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JMenu aboutMenu;
     private javax.swing.JPanel backgroundPanel;
     private javax.swing.JLabel crossesLabel;
     private javax.swing.JLabel crossesValueLabel;
     private javax.swing.JPanel gameBoardPanel;
+    private javax.swing.JMenuItem infoMenuItem;
     private javax.swing.JPanel infoPanel;
-    private javax.swing.JMenu jMenu1;
-    private javax.swing.JMenu jMenu2;
     private javax.swing.JMenuBar jMenuBar1;
     private javax.swing.JButton newGameButton;
     private javax.swing.JLabel noughtsLabel;
     private javax.swing.JLabel noughtsValueLabel;
     private javax.swing.JLabel statusLabel;
     // End of variables declaration//GEN-END:variables
-
 
 }
