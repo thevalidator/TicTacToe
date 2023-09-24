@@ -9,6 +9,8 @@ import java.awt.Image;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.imageio.ImageIO;
@@ -28,6 +30,7 @@ public class GameBoardPanel extends javax.swing.JPanel implements MouseListener 
     private StatusData status;
     private final Board board;
     private boolean isCrosses;
+    private boolean isOver;
     private int actionsNumber;
     private Image cross;
     private Image circle;
@@ -39,7 +42,7 @@ public class GameBoardPanel extends javax.swing.JPanel implements MouseListener 
      */
     public GameBoardPanel() {
         loadImages();
-        resetActions();
+        //resetActions();
         this.board = new Board();
         initComponents();
     }
@@ -47,7 +50,7 @@ public class GameBoardPanel extends javax.swing.JPanel implements MouseListener 
     public void setStatus(StatusData status) {
         this.status = status;
     }
-    
+
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -83,7 +86,7 @@ public class GameBoardPanel extends javax.swing.JPanel implements MouseListener 
     public void mouseClicked(MouseEvent e) {
         int xClickPos = e.getX();
         int yClickPos = e.getY();
-        if (gamingAreaClicked(xClickPos, yClickPos)) {
+        if (!isOver && gamingAreaClicked(xClickPos, yClickPos)) {
             int x = getColumnNumber(xClickPos);
             int y = getRowNumber(yClickPos);
             if (board.getboxValue(x, y) == 0) {
@@ -93,15 +96,14 @@ public class GameBoardPanel extends javax.swing.JPanel implements MouseListener 
             }
             isCrosses = !isCrosses;
             if (isFinished()) {
-                status.setStatus("FINISHED");
-                // TO DO: crossing line if win
+                isOver = true;
             } else {
-                status.setStatus(isCrosses ? "CROSSES TURN" : "NOUGHTS TURN");
+                status.setStatus(isCrosses ? "CROSSES TURN" : "NOUGHTS TURN", Color.LIGHT_GRAY);
             }
             repaint();
 
-            System.out.printf("x=%d y=%d\n", xClickPos, yClickPos);
-            System.out.printf("POINT[x=%d:y=%d] value=%d  -  Step: %d\n", x, y, board.getboxValue(x, y), actionsNumber);
+            //System.out.printf("x=%d y=%d\n", xClickPos, yClickPos);
+            //System.out.printf("POINT[x=%d:y=%d] value=%d  -  Step: %d\n", x, y, board.getboxValue(x, y), actionsNumber);
         }
 
     }
@@ -164,8 +166,8 @@ public class GameBoardPanel extends javax.swing.JPanel implements MouseListener 
         int start = MARGIN + BOX_SIZE / 2 - imgSize / 2;
         int offset = BOX_SIZE + MARGIN / 2;
 
-        int crossLineStart = BOX_SIZE / 2 + MARGIN;
-        int crossLineOffset = BOX_SIZE + MARGIN / 2;
+        //int crossLineStart = BOX_SIZE / 2 + MARGIN;
+        //int crossLineOffset = BOX_SIZE + MARGIN / 2;
         g.drawImage(figure, start + offset * x, start + offset * y, null);
     }
 
@@ -182,9 +184,11 @@ public class GameBoardPanel extends javax.swing.JPanel implements MouseListener 
     }
 
     private void clearValues() {
-        status.setStatus(isCrosses ? "CROSSES TURN" : "NOUGHTS TURN");
+        status.setStatus(isCrosses ? "CROSSES TURN" : "NOUGHTS TURN", Color.LIGHT_GRAY);
         board.resetValues();
-        resetActions();
+        isOver = false;
+        actionsNumber = 0;
+        //resetActions();
     }
 
     private boolean isFinished() {
@@ -202,74 +206,79 @@ public class GameBoardPanel extends javax.swing.JPanel implements MouseListener 
         }
         if (!isFinished && actionsNumber == 9) {
             isFinished = true;
+            status.setStatus("TIE", Color.MAGENTA);
         }
 
-        System.out.println(">>> IS FINISHED: " + isFinished);
+        //System.out.println(">>> IS FINISHED: " + isFinished);
         return isFinished;
     }
 
     private boolean checkRightDiagonal() {
+        List<Integer> line = new ArrayList<>();
         int sum = 0;
         int x = board.getVerticalSize() - 1;
         int y = 0;
         for (; x >= 0;) {
             sum += board.getboxValue(x, y);
+            line.add(x);
+            line.add(y);
             x--;
             y++;
         }
-
         if (threeInARow(sum)) {
-            updateWinStats(sum);
+            handleWin(sum, line);
             return true;
         }
         return false;
     }
 
     private boolean checkLeftDiagonal() {
+        List<Integer> line = new ArrayList<>();
         int sum = 0;
         for (int i = 0; i < board.getVerticalSize(); i++) {
             sum += board.getboxValue(i, i);
+            line.add(i);
+            line.add(i);
         }
         if (threeInARow(sum)) {
-            updateWinStats(sum);
+            handleWin(sum, line);
             return true;
         }
         return false;
     }
 
     private boolean checkVerticals() {
+        List<Integer> line = new ArrayList<>();
         for (int x = 0; x < board.getHorisontalSize(); x++) {
             int sum = 0;
             for (int y = 0; y < board.getVerticalSize(); y++) {
                 sum += board.getboxValue(x, y);
+                line.add(x);
+                line.add(y);
             }
             if (threeInARow(sum)) {
-                updateWinStats(sum);
+                handleWin(sum, line);
                 return true;
             }
+            line.clear();
         }
         return false;
     }
 
-    private void updateWinStats(int sum) {
-        if (sum > 0) {
-            status.incrementWinValue(Role.CROSS);
-        } else {
-            status.incrementWinValue(Role.NOUGHT);
-        }
-    }
-
     private boolean checkHorisontals() {
+        List<Integer> line = new ArrayList<>();
         for (int y = 0; y < board.getVerticalSize(); y++) {
             int sum = 0;
             for (int x = 0; x < board.getHorisontalSize(); x++) {
                 sum += board.getboxValue(x, y);
+                line.add(x);
+                line.add(y);
             }
             if (threeInARow(sum)) {
-                updateWinStats(sum);
-                //markWinLine()
+                handleWin(sum, line);
                 return true;
             }
+            line.clear();
         }
         return false;
     }
@@ -278,9 +287,39 @@ public class GameBoardPanel extends javax.swing.JPanel implements MouseListener 
         return Math.abs(sum) == 3;
     }
 
-    private void resetActions() {
-        actionsNumber = 0;
+    private void handleWin(int sum, List<Integer> line) {
+        Role winner = getWinner(sum);
+        updateWinStats(winner);
+        markWinLine(winner, line);
+        status.setStatus(winner + " WIN", Color.GREEN);
     }
+
+    private Role getWinner(int sum) {
+        if (sum > 0) {
+            return Role.CROSS;
+        } else {
+            return Role.NOUGHT;
+        }
+    }
+
+    private void updateWinStats(Role role) {
+        status.incrementWinValue(role);
+    }
+
+    private void markWinLine(Role winner, List<Integer> line) {
+        if (winner.equals(Role.CROSS)) {
+            winner = Role.CROSS_WIN;
+        } else {
+            winner = Role.NOUGHT_WIN;
+        }
+        for (int i = 0; i < line.size(); i += 2) {
+            board.setBoxValue(line.get(i), line.get(i + 1), winner);
+        }
+    }
+
+//    private void resetActions() {
+//        actionsNumber = 0;
+//    }
 
     private void loadImages() {
         try {

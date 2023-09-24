@@ -4,6 +4,7 @@
 
 package ru.thevalidator.tictactoe.model;
 
+import java.awt.Color;
 import javax.swing.JLabel;
 
 /**
@@ -21,7 +22,8 @@ public class StatusData {
         this.status = status;
     }
     
-    public void setStatus(String statusText) {
+    public void setStatus(String statusText, Color color) {
+        status.setForeground(color);
         status.setText(statusText);
     }
     
