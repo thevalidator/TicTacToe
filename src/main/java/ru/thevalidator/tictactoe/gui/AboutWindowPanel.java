@@ -40,7 +40,7 @@ public class AboutWindowPanel extends JEditorPane {
                 + "<br/>"
                 + "<a target=\"_blank\" href=\"https://icons8.com/icon/RvdYzOup1Xqx/multiply\">Multiply</a> icon by <a target=\"_blank\" href=\"https://icons8.com\">Icons8</a>"
                 + "<br/><br/>"
-                + "[thevalidator] - <a href=\"https://t.me/Li1Lil10\">Github</a><br/>"
+                + "[thevalidator] - <a href=\"https://github.com/thevalidator/TicTacToe\">Github</a><br/>"
                 + "2023, September<br/>"
                 + "v1.0.0"
                 + "</p>"
