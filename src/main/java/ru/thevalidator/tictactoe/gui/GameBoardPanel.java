@@ -42,9 +42,12 @@ public class GameBoardPanel extends javax.swing.JPanel implements MouseListener 
      */
     public GameBoardPanel() {
         loadImages();
-        //resetActions();
         this.board = new Board();
         initComponents();
+    }
+
+    public void setIsCrosses(boolean isCrosses) {
+        this.isCrosses = isCrosses;
     }
 
     public void setStatus(StatusData status) {
@@ -61,16 +64,17 @@ public class GameBoardPanel extends javax.swing.JPanel implements MouseListener 
     private void initComponents() {
 
         setBackground(new java.awt.Color(0, 153, 204));
+        setBorder(new javax.swing.border.LineBorder(java.awt.Color.darkGray, 1, true));
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 400, Short.MAX_VALUE)
+            .addGap(0, 398, Short.MAX_VALUE)
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 300, Short.MAX_VALUE)
+            .addGap(0, 298, Short.MAX_VALUE)
         );
     }// </editor-fold>//GEN-END:initComponents
 
@@ -101,9 +105,6 @@ public class GameBoardPanel extends javax.swing.JPanel implements MouseListener 
                 status.setStatus(isCrosses ? "CROSSES TURN" : "NOUGHTS TURN", Color.LIGHT_GRAY);
             }
             repaint();
-
-            //System.out.printf("x=%d y=%d\n", xClickPos, yClickPos);
-            //System.out.printf("POINT[x=%d:y=%d] value=%d  -  Step: %d\n", x, y, board.getboxValue(x, y), actionsNumber);
         }
 
     }
@@ -146,7 +147,6 @@ public class GameBoardPanel extends javax.swing.JPanel implements MouseListener 
     private void drawFigures(Graphics g) {
         for (int y = 0; y < board.getVerticalSize(); y++) {
             for (int x = 0; x < board.getHorisontalSize(); x++) {
-                // TODO: refactor selection figure to draw logic
                 int value = board.getboxValue(x, y);
                 if (value == Role.CROSS_WIN.getValue()) {
                     drawFigure(g, crossWin, x, y);
@@ -165,9 +165,6 @@ public class GameBoardPanel extends javax.swing.JPanel implements MouseListener 
         int imgSize = figure.getWidth(null);
         int start = MARGIN + BOX_SIZE / 2 - imgSize / 2;
         int offset = BOX_SIZE + MARGIN / 2;
-
-        //int crossLineStart = BOX_SIZE / 2 + MARGIN;
-        //int crossLineOffset = BOX_SIZE + MARGIN / 2;
         g.drawImage(figure, start + offset * x, start + offset * y, null);
     }
 
@@ -188,11 +185,9 @@ public class GameBoardPanel extends javax.swing.JPanel implements MouseListener 
         board.resetValues();
         isOver = false;
         actionsNumber = 0;
-        //resetActions();
     }
 
     private boolean isFinished() {
-
         boolean isFinished;
         isFinished = checkHorisontals();
         if (!isFinished) {
@@ -206,10 +201,8 @@ public class GameBoardPanel extends javax.swing.JPanel implements MouseListener 
         }
         if (!isFinished && actionsNumber == 9) {
             isFinished = true;
-            status.setStatus("TIE", Color.MAGENTA);
+            status.setStatus("TIE", Color.BLACK);
         }
-
-        //System.out.println(">>> IS FINISHED: " + isFinished);
         return isFinished;
     }
 
@@ -316,10 +309,6 @@ public class GameBoardPanel extends javax.swing.JPanel implements MouseListener 
             board.setBoxValue(line.get(i), line.get(i + 1), winner);
         }
     }
-
-//    private void resetActions() {
-//        actionsNumber = 0;
-//    }
 
     private void loadImages() {
         try {
